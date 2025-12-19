@@ -1,4 +1,6 @@
 # DMAC Matlab
-DMAC implementation for output feedback control of a dynamic system
+This repository contains example implementations of DMAC (Dynamic Mode Adaptive Control) using online system identification and adaptive LQR control. The method combines online matrix-based Recursive Least Squares (RLS) with optimal control to achieve reference tracking without prior knowledge of the system model.
 
-Run DMAC_linear_MP_runner.m in MATLAB
+Two benchmark examples are provided:
+- A linear Mass–Spring–Damper (MCK) system
+- A nonlinear Van der Pol (VDP) oscillator
