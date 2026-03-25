@@ -1,15 +1,73 @@
-# DMAC Matlab
-This repository contains example implementations of DMAC (Dynamic Mode Adaptive Control) using online system identification and adaptive LQR control. The method combines online matrix-based Recursive Least Squares (RLS) with optimal control to achieve reference tracking without prior knowledge of the system model.
+# Dynamic Mode Adaptive Control (DMAC) – MATLAB
 
-Two benchmark examples are provided:
-- A linear Mass–Spring–Damper (MCK) system
-- A nonlinear Van der Pol (VDP) oscillator
+This repository contains MATLAB implementations of **Dynamic Mode Adaptive Control (DMAC)**, a data-driven adaptive control framework that combines online system identification with optimal control.
 
-extract_A_B_DMD:
-Splits the identified parameter matrix into the system matrix A and input matrix B for control design.
+The method uses measured state and input data to:
+- Identify a local linear model online
+- Compute feedback gains via LQR
+- Achieve reference tracking without a prior model
 
-generate_augmented_A_B_DMD:
-Creates an augmented system that adds integral action to enable reference tracking and eliminate steady-state error.
+---
 
-RLS_update_DMD:
-Updates the system model online using measured data and provides a prediction error to monitor model accuracy.
+## Examples
+
+Two benchmark systems are included:
+
+- **Mass–Spring–Damper (MCK) system**  
+  Linear system used to demonstrate convergence and tracking performance
+
+- **Van der Pol (VDP) oscillator**  
+  Nonlinear system illustrating adaptation under changing dynamics
+
+---
+
+## Key Functions
+
+- **`DMAC_update`**  
+  Performs one step of parameter estimation and control update
+
+- **`MatrixRLS`**  
+  Online system identification using Recursive Least Squares (RLS)
+
+- **`compute_DMAC_control`**  
+  Computes feedback gains from the estimated model
+
+- **`extract_A_B_from_Theta`**  
+  Extracts system matrices from the parameter estimate
+
+- **`generate_augmented_A_B_DMAC`**  
+  Constructs augmented system for reference tracking
+
+- **`plot_DMAC_results`**  
+  Generates standard plots for tracking, control effort, and parameter evolution
+
+---
+
+## Features
+
+- Fully **data-driven** (no prior model required)
+- Online **adaptive control**
+- Supports **linear and nonlinear systems**
+- Modular and easy to extend
+
+---
+
+## Requirements
+
+- MATLAB  
+- Control System Toolbox (`idare`, `ctrb`, `c2d`)
+
+---
+
+## Authors
+**Parham Oveissi**, PhD Candidate
+**Dr. Juan Paredes**, Research Fellow  
+**Dr. Ankit Goel**, Assistant Professor  
+Mechanical Engineering  
+University of Maryland, Baltimore County (UMBC)
+
+---
+
+## License
+
+[Add license here]
