@@ -1,6 +1,6 @@
 clc; clear;
 close all;
-addpath DMAC_Functions_V2\
+addpath DMAC_Functions_V2/
 
 % Simulation parameters
 randn('state',2)
