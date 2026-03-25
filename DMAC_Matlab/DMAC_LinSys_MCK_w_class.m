@@ -41,7 +41,7 @@ opts_.rls_lambda = 1.0;
 % LQR weight matrices
 opts_.lqr_Q = 1*eye(n_x + n_y);  % Augmented state with integral state n_x + n_u
 % opts_.lqr_Q(n_x + n_y, n_x + n_y) = 1;
-opts_.lqr_R = 100*eye(n_u);
+opts_.lqr_R = 1*eye(n_u);
 
 % Standard deviation of excitation signal
 opts_.randn_std = 1e-2;
