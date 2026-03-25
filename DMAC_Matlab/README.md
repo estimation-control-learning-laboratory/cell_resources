@@ -60,9 +60,9 @@ Two benchmark systems are included:
 ---
 
 ## Authors
-**Parham Oveissi**, PhD Candidate
-**Dr. Juan Paredes**, Research Fellow  
-**Dr. Ankit Goel**, Assistant Professor  
+- **Parham Oveissi**, PhD Candidate
+- **Dr. Juan Paredes**, Research Fellow  
+- **Dr. Ankit Goel**, Assistant Professor  
 Mechanical Engineering  
 University of Maryland, Baltimore County (UMBC)
 
