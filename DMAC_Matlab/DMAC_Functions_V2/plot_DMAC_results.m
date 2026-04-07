@@ -81,7 +81,7 @@ nexttile(1)
 ref_sig = r * ones(1, size(log.Y,2));
 plot(ref_sig, 'k--', 'LineWidth', 2)
 hold on
-plot(log.Y, 'b', 'LineWidth', 3)
+plot(log.Y', 'b', 'LineWidth', 3)
 hold off
 set(gca, 'fontsize', 16);
 set(gca, 'xticklabel', {[]})
@@ -92,7 +92,7 @@ axis tight
 grid on
 
 nexttile(2)
-plot(log.U, 'b', 'LineWidth', 3)
+plot(log.U', 'b', 'LineWidth', 3)
 set(gca, 'fontsize', 16);
 set(gca, 'xticklabel', {[]})
 xlabel('b)', 'Interpreter', 'latex', 'fontsize', 22)
@@ -101,7 +101,7 @@ axis tight
 grid on
 
 nexttile(3)
-semilogy(abs(log.Y - r), 'b', 'LineWidth', 3)
+semilogy(abs(log.Y' - r), 'b', 'LineWidth', 3)
 set(gca, 'fontsize', 16);
 yticks(10.^(-5:1:5))
 xlabel({'c)' 'step ($k$)'}, 'Interpreter', 'latex', 'fontsize', 22)

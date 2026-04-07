@@ -177,6 +177,7 @@ function [Aa, Ba] = generate_augmented_A_B_DMD(A, B, C, dmac)
 %   [xi_{k+1}]   [ A   0 ] [xi_k]   [ B ] u_k
 %   [ q_{k+1}] = [-C   I ] [ q_k] + [ 0 ]
 %==========================================================================
+
 Aa = [A, zeros(dmac.lxi,dmac.ly); -C eye(dmac.ly)];
 
 Ba = [B; zeros(dmac.ly, dmac.lu)];
