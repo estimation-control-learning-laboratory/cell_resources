@@ -56,9 +56,13 @@
 %  v7  (2026_03_26) - DMAC now computes u(k+1) instead of u(k). It assumes
 %           the availability of xi(k+1), which assumes instantaneous
 %           control update at step k+1
+%
+%  v8  (2026_04_22) - Fixed integrator
+%           Added comments, removed unnecesary variables and reorganized
+%           
 %  ------------------------------------------------------------------------
 %  Pending Issues:
-%   - (2026_03_25) the integrator state should be a discrete update
+%   - (2026_03_25) [Fixed] the integrator state should be a discrete update
 %   - (2026_03_25) timing to be checked. u_k cannot depend on xi_k
 %  ------------------------------------------------------------------------
 %  ------------------------------------------------------------------------
@@ -101,21 +105,21 @@ plant.ks = 2;
 plant.c  = 0.5;
 
 [plant.A, plant.B ] = build_discrete_mass_spring_damper(plant, sim.dt);
-plant.C     = [1 0];
-plant.C_xi  = eye(2);
+plant.C     = [1 0];                    % Plant output (for tracking)
+plant.C_xi  = eye(2);                   % Partial state measurement \xi
 
 %% ========================================================================
 %  DMAC PARAMETERS
 %  ========================================================================
 
-dmac.lambda = 0.995;
-dmac.R0     = 1e2*eye(plant.lx + plant.lu);   % regressor dimension = [x;u]
-dmac.Q      = 1*eye(plant.lx + plant.lu);     % augmented state = [x; q]
-dmac.R      = 1e0*eye(plant.lu);
-dmac.v_std  = 1e-2;                     % Excitation Signal
+dmac.lambda = 0.995;                    % Forgetting factor in DMA
+dmac.R0     = 1e2*eye(plant.lx + plant.lu);   % R0 in DMA
+dmac.Q      = 1*eye(plant.lx + plant.lu);     % State penalty in LQR control
+dmac.R      = 1e+4*eye(plant.lu);              % Control penalty in LQR control
+dmac.v_std  = 1e-2;                     % Excitation Signal added to control
 
-dmac.C_xi   = [1 0];
-dmac.lxi    = plant.lxi;
+dmac.C_xi   = [1 0];                    % y = C_xi xi = C x - C is not necessarily equal to C_xi
+dmac.lxi    = plant.lxi;                % lxi is the length of partial state
 dmac.lu     = plant.lu;
 dmac.ly     = plant.ly;
 %% ========================================================================
@@ -129,20 +133,18 @@ xi  = zeros(plant.lxi, sim.N);
 q   = y;
 
 phi = zeros(plant.lxi+plant.lu, sim.N);
+
+Theta_k     = zeros(plant.lxi, plant.lxi + plant.lu);
+P_k         = inv(dmac.R0);
+K           = zeros(plant.lu, plant.lxi+plant.ly);
+
 %% ========================================================================
 %  INITIAL CONDITIONS
 %  ========================================================================
-x_k = randn(plant.lx, 1);
-q_k = 0;
-x(:,1) = randn(plant.lx, 1);
-xi(:,1) = x(:,1);
-q(:,1) = 0;
-r = 1;
+x(:,1)      = randn(plant.lx, 1);       % Initial State
+q(:,1)      = 0;                        % Integral state
+r           = 1;                        % Reference command
 
-Theta_k = zeros(plant.lxi, plant.lxi + plant.lu);
-P_k     = inv(dmac.R0);
-K_aug     = [0 0 0];
-K = zeros(plant.lu, plant.lxi+plant.ly);
 %% ========================================================================
 %  MAIN SIMULATION LOOP
 %  ========================================================================
@@ -163,7 +165,8 @@ for k = 1:sim.N
     % Integral state update
     % -------------------------------------------------
     e_k = r - y(:,k);
-    q(:,k+1) = q(:,k) + e_k * sim.dt;
+    % q(:,k+1) = q(:,k) + e_k * sim.dt;
+    q(:,k+1) = q(:,k) + e_k;
 
     % -------------------------------------------------
     % DMAC Update
@@ -192,11 +195,8 @@ end
 %  ========================================================================
 plot_DMAC_results(log, r);
 
-disp('True Ad:')
-disp(plant.A)
-
-disp('True Bd:')
-disp(plant.B)
+disp('True Ad and Bd:')
+disp([plant.A plant.B])
 
 disp('Estimated [A B]:')
 disp(Theta_kp1)
@@ -237,7 +237,3 @@ log.Y         = zeros(dmac.ly, N);
 log.Theta_vec = zeros(dmac.lxi*(dmac.lxi+dmac.lu), N);
 end
 
-% function u_k = compute_control_input(K_aug, x_aug_k, dmac)
-% excitation_signal  = dmac.v_std * randn;
-% u_k = K_aug * x_aug_k + excitation_signal;
-% end
