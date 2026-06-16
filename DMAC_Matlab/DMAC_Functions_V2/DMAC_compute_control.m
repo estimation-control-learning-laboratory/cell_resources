@@ -131,8 +131,13 @@ phi_km1        = [xi_km1; u_km1];
 %     0;
 % end
 excitation_signal = dmac.v_std * randn(dmac.lu,1);
-u_k = K(:,1:dmac.lxi)*xi_k + K(:,dmac.lxi+1:end)*q_k + ...
-    excitation_signal ;
+
+if strcmp(dmac.integrator,'no')
+    u_k = 1*K(:,1:dmac.lxi)*xi_k + excitation_signal ;
+else
+    u_k = K(:,1:dmac.lxi)*xi_k + K(:,dmac.lxi+1:end)*q_k + ...
+        excitation_signal ;
+end
 end
 
 
@@ -143,17 +148,28 @@ function K = compute_DMAC_control(Theta_km1, dmac, K)
 % previous gain is retained.
 %==========================================================================
     [A_est, B_est] = extract_A_B_from_Theta(Theta_km1, dmac);
-    
-    [A_est_aug, B_est_aug] = generate_augmented_A_B_DMD(A_est, B_est, dmac.C_xi, dmac);
-    
-    
-    if rank(ctrb(A_est_aug, B_est_aug)) ~= dmac.lxi + dmac.lu
-        disp('Not Controllable!!')
-    else
-        [~, K, ~] = idare(A_est_aug, B_est_aug, dmac.Q, dmac.R);
-        K = -K;
-    end
 
+    if strcmp(dmac.integrator,'no')
+        Q = norm(dmac.Q)*eye(size(A_est));
+        R = norm(dmac.R)*eye(size(B_est,2));
+        % if rank(ctrb(A_est, B_est)) ~= dmac.lxi;
+        if cond(ctrb(A_est, B_est)) > 1e10;
+            disp('Not Controllable!!')
+        else            
+            K = -lqr(A_est,B_est,Q,R);
+            % K = -place(A_est,B_est,[0.4, 0.5, 0.6]);
+        end
+    else
+        [A_est_aug, B_est_aug] = generate_augmented_A_B_DMD(A_est, B_est, dmac.C_xi, dmac);
+
+
+        if rank(ctrb(A_est_aug, B_est_aug)) ~= dmac.lxi + dmac.lu
+            disp('Not Controllable!!')
+        else
+            [~, K, ~] = idare(A_est_aug, B_est_aug, dmac.Q, dmac.R);
+            K = -K;
+        end
+    end
 end
 
 function [A, B] = extract_A_B_from_Theta(Theta, dmac)
