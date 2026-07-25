@@ -122,6 +122,7 @@ dmac.C_xi   = [1 0];                    % y = C_xi xi = C x - C is not necessari
 dmac.lxi    = plant.lxi;                % lxi is the length of partial state
 dmac.lu     = plant.lu;
 dmac.ly     = plant.ly;
+dmac.integrator = 'yes'
 %% ========================================================================
 %  MEMORY ALLOCATION
 %  ========================================================================
@@ -174,6 +175,7 @@ for k = 1:sim.N
     [u(:,k+1),Theta_kp1, P_kp1, K]  = DMAC_compute_control(xi(:,k+1),q(:,k+1), xi(:,k),u(:,k), dmac, Theta_k, P_k, K);
     Theta_k       = Theta_kp1;
     P_k           = P_kp1;
+
 
 
 
